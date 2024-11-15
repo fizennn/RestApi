@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index</title>
+  <style>
+    /* Đặt chung cho form */
+form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Định dạng cho các label */
+form label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Định dạng cho các input */
+form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Định dạng cho button */
+form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+form button:hover {
+  background-color: #45a049;
+}
+
+/* Khi input có lỗi, thay đổi màu viền */
+form input:invalid {
+  border-color: rgb(206, 206, 206);
+}
+
+/* Khi input hợp lệ, thay đổi màu viền */
+form input:valid {
+  border-color: green;
+}
+
+  </style>
+</head>
+<body>
+    <form id="carForm">
+  <label for="maXe">Mã Xe:</label>
+  <input type="text" id="maXe" name="maXe" required><br>
+
+  <label for="name">Tên:</label>
+  <input type="text" id="name" name="name" required><br>
+
+  <label for="price">Giá:</label>
+  <input type="number" id="price" name="price" required><br>
+
+  <label for="year">Năm:</label>
+  <input type="number" id="year" name="year" required min="1980" max="2024"><br>
+
+  <label for="brand">Hãng:</label>
+  <input type="text" id="brand" name="brand" required><br>
+
+  <button type="submit">Thêm Ô tô</button>
+</form>
+
+<script>
+  document.getElementById('carForm').addEventListener('submit', function (event) {
+    event.preventDefault();  // Ngừng hành động gửi form mặc định
+
+    const name = document.getElementById('name').value;
+    const price = document.getElementById('price').value;
+    const year = document.getElementById('year').value;
+
+    // Kiểm tra tên: chỉ cho phép chữ cái và không có khoảng trắng
+    const nameRegex = /^[A-Za-z\s]+$/;  // Chỉ cho phép chữ cái và khoảng trắng
+    if (!nameRegex.test(name)) {
+      alert('Tên phải là chữ cái.');
+      return;  // Dừng việc gửi form nếu không hợp lệ
+    }
+
+    // Kiểm tra giá: phải là số và lớn hơn 0
+    if (isNaN(price) || Number(price) <= 0) {
+      alert('Giá phải là số dương.');
+      return;  // Dừng việc gửi form nếu không hợp lệ
+    }
+
+    // Kiểm tra năm: phải nằm trong khoảng từ 1980 đến 2024
+    if (year < 1980 || year > 2024) {
+      alert('Năm phải nằm trong khoảng 1980 đến 2024.');
+      return;  // Dừng việc gửi form nếu không hợp lệ
+    }
+
+    // Tạo đối tượng data từ form sau khi tất cả validation đều hợp lệ
+    const formData = new FormData(event.target);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    // Gửi dữ liệu lên server
+    fetch('/api/addCar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',  // Định dạng dữ liệu gửi đi là JSON
+      },
+      body: JSON.stringify(data),  // Chuyển dữ liệu thành chuỗi JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('Thêm ô tô thành công!');
+      console.log(data);  // In ra phản hồi từ server
+    })
+    .catch(error => {
+      alert('Có lỗi xảy ra!');
+      console.error('Lỗi:', error);
+    });
+  });
+</script>
+</body>
+</html>
+
+
+
+
